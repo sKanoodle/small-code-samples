@@ -11,8 +11,8 @@ let toInt = function
 
 let rec ConvertFromRomanToArabic = function
     | [] -> 0
-    | c::n::r when toInt c < toInt n -> (toInt n - toInt c) + ConvertFromRomanToArabic r
-    | c::r -> toInt c + ConvertFromRomanToArabic r
+    | curr::next::rest when toInt curr < toInt next -> (toInt next - toInt curr) + ConvertFromRomanToArabic rest
+    | curr::rest -> toInt curr + ConvertFromRomanToArabic rest
 
 let ConvertFromRomanToArabicWithErrorChecking (roman:char list) =
     if Regex("(M*)?(CM|CD|D?C{1,3})?(XC|XL|L?X{1,3})?(IX|IV|V?I{1,3})?").Match(System.String.Concat(roman)).Length = roman.Length |> not
@@ -35,9 +35,9 @@ let toRoman = function
 
 let rec ConvertFromArabicToRoman = function
     | 0 -> ""
-    | i -> 
-        let s, v = toRoman i
-        s + ConvertFromArabicToRoman (i - v)
+    | arabic -> 
+        let s, value = toRoman arabic
+        s + ConvertFromArabicToRoman (arabic - value)
 
 let testList f list =
     let printInputTuple t =
@@ -57,7 +57,7 @@ let ``test arabic to roman`` =
 [<EntryPoint>]
 let main argv =
     let list = [("I", 1); ("II", 2); ("IV", 4); ("V", 5); ("IX", 9); ("XLII", 42); ("XCIX", 99); ("MMXIII", 2013)]
-    let erroneousList = [("I", Some 1); ("MMXIII", Some 2013); ("MM XIII", None); ("DNFSA", None); (" ", None);("", Some 0);("VIIII", None);("XM", None);("MDLM", None)]
+    let erroneousList = [("I", Some 1); ("MMXIII", Some 2013); ("MM XIII", None); ("DNFSA", None); (" ", None); ("", Some 0); ("VIIII", None); ("XM", None); ("MDLM", None)]
     printfn "roman -> arabic"; ``test roman to arabic`` list
     printfn "\nroman -> arabic"; ``test roman to arabic with error checking`` erroneousList
     printfn "\narabic -> roman"; ``test arabic to roman`` list
